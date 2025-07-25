@@ -35,9 +35,8 @@ jobs:
 
       - name: Build image with Buildah (local only)
         run: |
-          sudo buildah bud -t localhost/my-app:latest .
+          sudo buildah bud -t my-app:latest .
 
       - name: Show built image
         run: |
           sudo buildah images
-
