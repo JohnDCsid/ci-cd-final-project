@@ -33,9 +33,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y buildah
 
-      - name: Build docker image with Buildah
+      - name: Build docker image with Buildah (local only)
         run: |
-          sudo buildah --version
-          ls -l Dockerfile
-          pwd
-          sudo buildah bud -f Dockerfile -t my-app:latest .
+          sudo buildah bud -f Dockerfile -t localhost/my-app:latest .
+
+      - name: Show built image
+        run: |
+          sudo buildah images
