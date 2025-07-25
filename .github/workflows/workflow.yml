@@ -35,7 +35,7 @@ jobs:
 
       - name: Build image with Buildah (local only)
         run: |
-          sudo buildah bud -f Dockerfile -t localhost/my-app:latest .
+          sudo buildah bud -t localhost/my-app:latest .
 
       - name: Show built image
         run: |
