@@ -67,3 +67,22 @@ spec:
         value: "$(params.build-image)"
       runAfter:
         - tests
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildah
+spec:
+  params:
+    - name: IMAGE
+      type: string
+      description: Image to build
+    - name: BUILDER_IMAGE
+      type: string
+      description: Builder image for buildah
+      default: registry.redhat.io/rhel8/buildah@sha256:55f5c7d88c77e1ab5a2ab8e877172b2b66cb196e21f10dc45148470d0ee8bbae
+  steps:
+    - name: build
+      image: $(params.BUILDER_IMAGE)
+      script: |
+        buildah bud -f Dockerfile -t $(params.IMAGE) .
