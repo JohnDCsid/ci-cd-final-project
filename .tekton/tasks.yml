@@ -56,17 +56,6 @@ spec:
         python -m pip install --upgrade pip wheel
         pip install -r requirements.txt
         nosetests $(params.args)
-  tasks:
-     - name: source
-          workspace: pipeline-workspace          
-      taskRef:
-        name: buildah
-        kind: ClusterTask
-      params:
-      - name: IMAGE
-        value: "$(params.build-image)"
-      runAfter:
-        - tests
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -84,5 +73,7 @@ spec:
   steps:
     - name: build
       image: $(params.BUILDER_IMAGE)
+      workingDir: $(workspaces.source.path)
       script: |
+        set -eux
         buildah bud -f Dockerfile -t $(params.IMAGE) .
