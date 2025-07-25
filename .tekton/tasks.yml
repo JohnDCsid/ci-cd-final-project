@@ -70,6 +70,8 @@ spec:
       type: string
       description: Builder image for buildah
       default: registry.redhat.io/rhel8/buildah@sha256:55f5c7d88c77e1ab5a2ab8e877172b2b66cb196e21f10dc45148470d0ee8bbae
+  workspaces:
+    - name: source
   steps:
     - name: build
       image: $(params.BUILDER_IMAGE)
