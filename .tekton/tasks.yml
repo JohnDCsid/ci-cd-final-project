@@ -65,17 +65,38 @@ spec:
   params:
     - name: IMAGE
       type: string
-      description: Image to build
+      description: Image to build and push (pilns nosaukums, piem. docker.io/lietotajs/my-app:tag)
     - name: BUILDER_IMAGE
       type: string
       description: Builder image for buildah
       default: registry.redhat.io/rhel8/buildah@sha256:55f5c7d88c77e1ab5a2ab8e877172b2b66cb196e21f10dc45148470d0ee8bbae
+    - name: SKIP_PUSH
+      type: string
+      description: If true, skip pushing image
+      default: "false"
   workspaces:
     - name: source
+    - name: dockerconfig
+      optional: true
   steps:
     - name: build
       image: $(params.BUILDER_IMAGE)
       workingDir: $(workspaces.source.path)
       script: |
-        set -eux
-        buildah bud -f Dockerfile -t $(params.IMAGE) .
+        #!/bin/sh
+        set -e
+
+        echo "Building image $(params.IMAGE)..."
+        buildah bud -f Dockerfile -t $(params.IMAGE) $(workspaces.source.path)
+
+        if [ "$(params.SKIP_PUSH)" != "true" ]; then
+          echo "Pushing image $(params.IMAGE)..."
+          if [ -d "$(workspaces.dockerconfig.path)/.docker" ]; then
+            echo "Using dockerconfig for authentication"
+            export REGISTRY_AUTH_FILE=$(workspaces.dockerconfig.path)/config.json
+          fi
+          buildah push $(params.IMAGE)
+        else
+          echo "Skipping image push"
+        fi
+
